@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   ArrowLeft,
   BarChart3,
@@ -14,6 +14,11 @@ import {
 import Dashboard from './components/dashboard'
 
 const USERS_KEY = 'mrp_users'
+const DEFAULT_TEST_USER = {
+  name: 'Test Admin',
+  email: 'test@masterreport.com',
+  password: 'test1234',
+}
 const toSafeLower = (value) => String(value || '').toLowerCase()
 
 const readUsers = () => {
@@ -29,6 +34,14 @@ const readUsers = () => {
 
 const saveUsers = (users) => {
   localStorage.setItem(USERS_KEY, JSON.stringify(users))
+}
+
+const ensureTestUser = () => {
+  const users = readUsers()
+  if (users.length > 0) return users
+
+  saveUsers([DEFAULT_TEST_USER])
+  return [DEFAULT_TEST_USER]
 }
 
 const randomInt = (min, max) =>
@@ -49,6 +62,10 @@ function App() {
     email: '',
     password: '',
   })
+
+  useEffect(() => {
+    ensureTestUser()
+  }, [])
 
   const [heroSnapshot] = useState(() => ({
     performanceScore: randomInt(82, 98),
